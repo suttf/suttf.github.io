@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Date</title>
+  <link rel="stylesheet" href="../../shared/style.css" />
+</head>
+<body>
+  <div class="card" style="--accent: var(--mustard)">
+    <div class="readout" id="day">--</div>
+    <div class="label" id="date-label"></div>
+  </div>
+
+  <script type="module">
+    import { applyTheme } from '../../shared/utils.js';
+
+    applyTheme();
+
+    const dayEl = document.getElementById('day');
+    const labelEl = document.getElementById('date-label');
+
+    function render() {
+      const now = new Date();
+      dayEl.textContent = String(now.getDate()).padStart(2, '0');
+      labelEl.textContent = now.toLocaleDateString(undefined, {
+        weekday: 'long',
+        month: 'long',
+        year: 'numeric',
+      });
+    }
+
+    render();
+    // Recheck at the top of every minute in case the widget stays open past midnight.
+    setInterval(render, 60 * 1000);
+  </script>
+</body>
+</html>
