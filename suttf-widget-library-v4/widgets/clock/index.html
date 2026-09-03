@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>clock</title>
+<link rel="stylesheet" href="../../shared/theme.css">
+<script src="../../shared/config.js"></script>
+</head>
+<body><div class="widget">
+  <div class="label"><span class="icon">⏱</span> Local time</div>
+  <div class="value" id="value">--:--:--</div>
+  <div class="sub" id="zone"></div>
+</div>
+<script>
+const pad=n=>String(n).padStart(2,"0");
+function tick(){
+ const d=new Date();
+ value.textContent=`${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+ zone.textContent=Intl.DateTimeFormat().resolvedOptions().timeZone;
+}
+tick();setInterval(tick,1000);
+</script></body>
+</html>

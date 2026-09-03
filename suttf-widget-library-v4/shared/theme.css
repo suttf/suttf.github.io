@@ -1,0 +1,112 @@
+:root{
+  /* Change these few variables to retheme the entire library. */
+  --bg:#0f0f10;
+  --surface:#171719;
+  --surface-2:#1d1d20;
+  --surface-3:#242428;
+  --text:#f1f1f0;
+  --muted:#9a9a9f;
+  --faint:#66666d;
+  --line:rgba(255,255,255,.075);
+  --accent:#f0c95a;
+  --success:#b9e77d;
+  --danger:#f08b8b;
+  --blue:#91b8ff;
+  --purple:#c69af2;
+  --pink:#f09aa0;
+
+  --radius:16px;
+  --radius-sm:11px;
+  --shadow:0 8px 28px rgba(0,0,0,.18);
+  --font:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;min-height:100%;background:transparent}
+body{font-family:var(--font);color:var(--text);-webkit-font-smoothing:antialiased}
+
+.widget{
+  width:100%;
+  min-height:100%;
+  padding:18px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+
+.label{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.01em;
+  line-height:1.2;
+}
+
+.value{
+  margin-top:11px;
+  font-size:34px;
+  font-weight:650;
+  line-height:1;
+  letter-spacing:-.035em;
+  font-variant-numeric:tabular-nums;
+}
+
+.sub{
+  margin-top:8px;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.icon{
+  width:17px;height:17px;display:inline-flex;align-items:center;justify-content:center;
+  flex:0 0 17px;
+}
+.icon svg{width:100%;height:100%;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+.pill{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 9px;border-radius:999px;
+  background:var(--surface-2);border:1px solid var(--line);
+  color:var(--muted);font-size:11px;
+}
+
+button{
+  border:0;
+  background:var(--surface-3);
+  color:var(--text);
+  padding:8px 12px;
+  border-radius:var(--radius-sm);
+  font:inherit;
+  font-size:11px;
+  font-weight:600;
+  cursor:pointer;
+}
+button:hover{background:#2b2b30}
+button.primary{background:var(--text);color:#111}
+button.primary:hover{opacity:.9}
+
+.progress{
+  height:7px;
+  background:var(--surface-3);
+  border-radius:999px;
+  overflow:hidden;
+}
+.progress > div{
+  height:100%;
+  background:var(--accent);
+  border-radius:999px;
+  transition:width .35s ease;
+}
+
+.row{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.muted{color:var(--muted)}
+.tiny{font-size:10px;color:var(--faint);letter-spacing:.04em;text-transform:uppercase}
+
+.library{max-width:680px;margin:50px auto;padding:24px;color:var(--text)}
+.library a{color:var(--text)}
+.library p{color:var(--muted)}

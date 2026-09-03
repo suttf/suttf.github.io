@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>weekly-study</title>
+<link rel="stylesheet" href="../../shared/theme.css">
+<script src="../../shared/config.js"></script>
+</head>
+<body><div class="widget">
+  <div class="row">
+    <div class="label"><span class="icon">▤</span> Weekly study</div>
+    <span class="tiny">this week</span>
+  </div>
+  <div class="value" id="value"></div>
+  <div id="bars" style="display:grid;grid-template-columns:repeat(7,1fr);gap:7px;margin-top:18px"></div>
+</div>
+<script>
+const hours=window.WIDGET_CONFIG?.weekHours||[],names=["M","T","W","T","F","S","S"],max=Math.max(...hours,1);
+value.textContent=`${hours.reduce((a,b)=>a+b,0).toFixed(1)}h`;
+bars.innerHTML=hours.map((h,i)=>`
+ <div style="min-width:0">
+   <div style="height:62px;background:var(--surface-2);border-radius:9px;display:flex;align-items:end;overflow:hidden">
+     <div style="width:100%;height:${h/max*100}%;background:var(--accent);border-radius:9px 9px 0 0"></div>
+   </div>
+   <div style="text-align:center;margin-top:5px;font-size:10px;color:var(--muted)">${names[i]}</div>
+ </div>`).join("");
+</script></body>
+</html>

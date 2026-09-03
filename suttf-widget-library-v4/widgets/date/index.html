@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>date</title>
+<link rel="stylesheet" href="../../shared/theme.css">
+<script src="../../shared/config.js"></script>
+</head>
+<body><div class="widget">
+  <div class="label"><span class="icon">▦</span> Today</div>
+  <div class="value" id="value"></div>
+  <div class="sub" id="sub"></div>
+</div>
+<script>
+const d=new Date();
+value.textContent=new Intl.DateTimeFormat("en-US",{day:"numeric",month:"long"}).format(d);
+sub.textContent=new Intl.DateTimeFormat("en-US",{weekday:"long",year:"numeric"}).format(d);
+</script></body>
+</html>
