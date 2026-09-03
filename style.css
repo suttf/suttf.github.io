@@ -1,0 +1,40 @@
+:root{
+  --bg:#f7f7f5;
+  --card:#ffffff;
+  --text:#171717;
+  --muted:#858585;
+  --line:#e8e8e4;
+  --soft:#f0f0ec;
+  --radius:22px;
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Inter",sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font)}
+.page{max-width:900px;margin:0 auto;padding:28px}
+.widget{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px;min-height:150px}
+.hero{min-height:190px;display:flex;flex-direction:column;justify-content:center}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:14px}
+.wide{grid-column:1/-1}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+h1{font-size:34px;line-height:1.08;margin:0 0 8px;font-weight:650;letter-spacing:-.03em}
+h2{font-size:24px;margin:0;font-weight:650;letter-spacing:-.025em}
+.big{font-size:42px;font-weight:650;letter-spacing:-.04em}
+.muted{color:var(--muted)}
+.row{display:flex;justify-content:space-between;align-items:end;gap:16px}
+.bar{height:10px;background:var(--soft);border-radius:99px;overflow:hidden;margin-top:18px}
+.fill{height:100%;width:0;background:var(--text);border-radius:99px;transition:width .35s ease}
+button{border:1px solid var(--line);background:var(--card);color:var(--text);padding:9px 13px;border-radius:12px;cursor:pointer;font:inherit}
+button:hover{background:var(--soft)}
+.timer-display{font-size:48px;font-variant-numeric:tabular-nums;letter-spacing:-.04em;margin:12px 0}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:18px}
+.day{min-width:0}
+.day-name{font-size:11px;color:var(--muted);text-align:center;margin-bottom:7px}
+.day-bar{height:80px;background:var(--soft);border-radius:10px;display:flex;align-items:end;overflow:hidden}
+.day-fill{width:100%;background:var(--text);border-radius:10px 10px 0 0}
+.day-hours{text-align:center;font-size:11px;color:var(--muted);margin-top:7px}
+.small-note{font-size:13px;color:var(--muted);margin-top:10px}
+@media(max-width:620px){
+  .page{padding:14px}.grid{grid-template-columns:1fr}.wide{grid-column:auto}
+  h1{font-size:29px}.big{font-size:36px}
+}
