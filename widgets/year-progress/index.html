@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Year Progress</title>
+  <link rel="stylesheet" href="../../shared/style.css" />
+</head>
+<body>
+  <div class="card" style="--accent: var(--periwinkle); width: 220px;">
+    <div class="readout" id="percent">--%</div>
+    <div class="tick-line">
+      <div class="tick-line__fill" id="fill" style="width: 0%"></div>
+    </div>
+    <div class="label" id="detail"></div>
+  </div>
+
+  <script type="module">
+    import { applyTheme, percentElapsed, daysBetween } from '../../shared/utils.js';
+
+    applyTheme();
+
+    const percentEl = document.getElementById('percent');
+    const fillEl = document.getElementById('fill');
+    const detailEl = document.getElementById('detail');
+
+    function render() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const start = new Date(year, 0, 1);
+      const end = new Date(year + 1, 0, 1);
+
+      const percent = percentElapsed(start, end, now);
+      const dayOfYear = daysBetween(start, now) + 1;
+      const totalDays = daysBetween(start, end);
+
+      percentEl.textContent = `${Math.round(percent)}%`;
+      fillEl.style.width = `${percent}%`;
+      detailEl.textContent = `Day ${dayOfYear} of ${totalDays}, ${year}`;
+    }
+
+    render();
+    // The percentage moves slowly — no need to recompute every second.
+    setInterval(render, 60 * 60 * 1000);
+  </script>
+</body>
+</html>
