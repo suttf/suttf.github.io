@@ -7,55 +7,63 @@
   <link rel="stylesheet" href="../../shared/style.css">
 
   <style>
-    /* Timer-specific layout only. Visual language comes from shared/style.css. */
+    /* Timer-only layout. The visual language remains controlled by shared/style.css. */
     .timer {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      min-height: 190px;
-      justify-content: center;
+      display: grid;
+      grid-template-rows: 1fr 42px 44px 28px;
+      min-height: 210px;
+      gap: 0;
+      align-items: center;
+      text-align: center;
     }
 
     .timer-display {
-      text-align: center;
       font-variant-numeric: tabular-nums;
       font-size: clamp(2.7rem, 10vw, 4.8rem);
       line-height: 1;
       letter-spacing: -0.045em;
       font-weight: 600;
+      white-space: nowrap;
     }
 
     .timer-message {
-      text-align: center;
-      min-height: 38px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       color: var(--muted, #96969c);
-      font-size: 0.82rem;
-      line-height: 1.45;
-    }
-
-    .timer-message strong {
-      color: var(--text, #f1f1f0);
-      font-weight: 600;
+      font-size: 0.8rem;
+      line-height: 1.35;
+      padding: 0 12px;
     }
 
     .timer-actions {
+      height: 44px;
       display: flex;
       justify-content: center;
       align-items: center;
       gap: 8px;
-      flex-wrap: wrap;
+    }
+
+    .timer-secondary {
+      height: 28px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .timer-btn {
+      min-width: 82px;
+      height: 34px;
+      padding: 0 13px;
       border: 1px solid var(--line, rgba(255,255,255,.075));
       background: var(--surface-2, #1d1d20);
       color: var(--text, #f1f1f0);
       border-radius: 10px;
-      padding: 8px 14px;
       font: inherit;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       cursor: pointer;
-      transition: transform .12s ease, background .15s ease, opacity .15s ease;
+      transition: background .15s ease, transform .12s ease, opacity .15s ease;
     }
 
     .timer-btn:hover:not(:disabled) {
@@ -70,34 +78,49 @@
       font-weight: 600;
     }
 
-    .timer-btn.danger {
-      color: var(--red, #f08b8b);
-    }
-
-    .timer-btn:disabled {
-      display: none;
-    }
-
-    .timer-subaction {
-      display: flex;
-      justify-content: center;
-      min-height: 30px;
-    }
-
-    .timer-subaction .timer-btn {
-      padding: 6px 10px;
+    .timer-btn.secondary {
+      min-width: auto;
+      height: 28px;
+      padding: 0 9px;
+      border: 0;
+      background: transparent;
+      color: var(--muted, #96969c);
       font-size: 0.72rem;
     }
 
-    .timer-saved {
-      color: var(--green, #b9e77d);
+    .timer-btn.secondary:hover:not(:disabled) {
+      background: transparent;
+      color: var(--text, #f1f1f0);
+      transform: none;
+    }
+
+    .timer-btn[hidden] {
+      display: inline-flex;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .timer-actions .timer-btn[hidden] {
+      display: inline-flex;
+    }
+
+    .timer-btn:disabled:not([hidden]) {
+      opacity: .42;
+      cursor: default;
+    }
+
+    @media (max-width: 360px) {
+      .timer-btn {
+        min-width: 76px;
+        padding: 0 10px;
+      }
     }
   </style>
 </head>
 
 <body>
   <main class="widget">
-    <section class="card timer" id="timerCard">
+    <section class="card timer" aria-label="Timer">
       <div class="timer-display" id="display">00:00:00</div>
 
       <div class="timer-message" id="message">
@@ -106,31 +129,34 @@
 
       <div class="timer-actions">
         <button class="timer-btn primary" id="start">Başlat</button>
-        <button class="timer-btn" id="pause" disabled>Duraklat</button>
-        <button class="timer-btn primary" id="resume" disabled>Devam Et</button>
-        <button class="timer-btn" id="finish" disabled>Bitir</button>
+        <button class="timer-btn" id="pause" hidden>Duraklat</button>
+        <button class="timer-btn primary" id="resume" hidden>Devam Et</button>
+        <button class="timer-btn" id="finish" hidden>Bitir</button>
+        <button class="timer-btn primary" id="save" hidden>Kaydet</button>
       </div>
 
-      <div class="timer-subaction">
-        <button class="timer-btn danger" id="restart">Yeniden Başlat</button>
-        <button class="timer-btn" id="save" disabled>Kaydet</button>
+      <div class="timer-secondary">
+        <button class="timer-btn secondary" id="restart">↻ Yeniden başlat</button>
       </div>
     </section>
   </main>
 
   <script>
     /*
-      Timer state is intentionally kept separate from the UI.
-      Future Notion integration can read `elapsedSeconds` after Finish
-      and send that value to a database without changing the timer engine.
+      Timer state is deliberately independent from the UI.
+      Future Notion integration can use:
+        state.elapsedSeconds
+        state.finished
+        state.saved
+      without changing the timer engine.
     */
 
     const state = {
       elapsedSeconds: 0,
       running: false,
+      startedOnce: false,
       finished: false,
       saved: false,
-      startedOnce: false,
       lastTick: null
     };
 
@@ -138,12 +164,13 @@
 
     const display = document.getElementById("display");
     const message = document.getElementById("message");
+
     const start = document.getElementById("start");
     const pause = document.getElementById("pause");
     const resume = document.getElementById("resume");
     const finish = document.getElementById("finish");
-    const restart = document.getElementById("restart");
     const save = document.getElementById("save");
+    const restart = document.getElementById("restart");
 
     function formatTime(totalSeconds) {
       const hours = Math.floor(totalSeconds / 3600);
@@ -155,35 +182,39 @@
         .join(":");
     }
 
+    function setVisible(element, visible) {
+      element.hidden = !visible;
+    }
+
     function render() {
       display.textContent = formatTime(state.elapsedSeconds);
 
-      start.disabled = state.startedOnce;
-      pause.disabled = !state.running;
-      resume.disabled = !(state.startedOnce && !state.running && !state.finished);
-      finish.disabled = !(state.startedOnce && !state.finished);
-      save.disabled = !(state.finished && !state.saved);
+      setVisible(start, !state.startedOnce);
+      setVisible(pause, state.running);
+      setVisible(resume, state.startedOnce && !state.running && !state.finished);
+      setVisible(finish, state.startedOnce && !state.finished);
+      setVisible(save, state.finished && !state.saved);
 
       if (!state.startedOnce) {
-        message.innerHTML = "Sude, hazırsan başlayalım.";
+        message.textContent = "Sude, hazırsan başlayalım.";
       } else if (state.running) {
-        message.innerHTML = "Çalışıyoruz. ⏱️";
+        message.textContent = "Çalışıyoruz. ⏱️";
       } else if (state.finished && state.saved) {
-        message.innerHTML = '<span class="timer-saved">Oturum kaydedildi. ✓</span>';
+        message.textContent = "Kaydedildi.";
       } else if (state.finished) {
-        message.innerHTML = 'Oturum tamamlandı. <strong>Kaydetmeye hazır.</strong>';
+        message.textContent = "Oturum bitti. Kaydetmek ister misin?";
       } else {
-        message.innerHTML = 'Kısa bir mola. Hazır olduğunda devam et.';
+        message.textContent = "Duraklatıldı.";
       }
     }
 
     function tick() {
       const now = Date.now();
-      const delta = Math.floor((now - state.lastTick) / 1000);
+      const elapsed = Math.floor((now - state.lastTick) / 1000);
 
-      if (delta > 0) {
-        state.elapsedSeconds += delta;
-        state.lastTick += delta * 1000;
+      if (elapsed > 0) {
+        state.elapsedSeconds += elapsed;
+        state.lastTick += elapsed * 1000;
         display.textContent = formatTime(state.elapsedSeconds);
       }
     }
@@ -206,6 +237,7 @@
       clearInterval(intervalId);
       intervalId = null;
       state.running = false;
+
       render();
     }
 
@@ -221,23 +253,19 @@
       state.running = false;
       state.finished = true;
       state.saved = false;
+
       render();
     }
 
     function restartTimer() {
-      if (state.elapsedSeconds > 0 && !state.finished) {
-        const confirmed = window.confirm("Bu oturumu sıfırlamak istediğine emin misin?");
-        if (!confirmed) return;
-      }
-
       clearInterval(intervalId);
       intervalId = null;
 
       state.elapsedSeconds = 0;
       state.running = false;
+      state.startedOnce = false;
       state.finished = false;
       state.saved = false;
-      state.startedOnce = false;
       state.lastTick = null;
 
       render();
@@ -247,10 +275,9 @@
       if (!state.finished || state.saved) return;
 
       /*
-        Future Notion integration point:
-        - state.elapsedSeconds
-        - new Date()
-        can be sent to the chosen Notion database here.
+        Future Notion integration:
+        send state.elapsedSeconds and the current date/time
+        to the selected Notion database here.
       */
 
       state.saved = true;
