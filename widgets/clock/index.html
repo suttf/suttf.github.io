@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Clock</title>
+  <link rel="stylesheet" href="../../shared/style.css" />
+</head>
+<body>
+  <div class="widget">
+    <div class="readout" id="time">--:--:--</div>
+    <div class="label" id="date-label"></div>
+  </div>
+
+  <script type="module">
+    import { applyTheme } from '../../shared/utils.js';
+
+    applyTheme();
+
+    const timeEl = document.getElementById('time');
+    const dateEl = document.getElementById('date-label');
+
+    function pad(n) {
+      return String(n).padStart(2, '0');
+    }
+
+    function render() {
+      const now = new Date();
+      timeEl.textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+      dateEl.textContent = now.toLocaleDateString(undefined, {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+      });
+    }
+
+    render();
+    setInterval(render, 1000);
+  </script>
+</body>
+</html>

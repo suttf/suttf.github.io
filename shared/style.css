@@ -1,0 +1,122 @@
+:root {
+  color-scheme: light dark;
+
+  /* color */
+  --ink: #171a1f;
+  --muted: #8a8f98;
+  --brass: #a8783c;
+  --line: rgba(23, 26, 31, 0.14);
+  --paper-light: #fbfaf7;
+  --paper-dark: #15171b;
+
+  /* type */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+
+  /* spacing */
+  --gap-xs: 0.25rem;
+  --gap-sm: 0.5rem;
+  --gap-md: 1rem;
+}
+
+[data-theme="dark"] {
+  --ink: #e6e6e6;
+  --muted: #7d838d;
+  --line: rgba(230, 230, 230, 0.16);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-sans);
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: var(--gap-sm);
+}
+
+/* Layout: no container box. The widget is the content; Notion supplies the frame. */
+.widget {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--gap-xs);
+  width: 100%;
+}
+
+/* Use on text-heavier widgets (current-study, next-task) instead of centered .widget */
+.widget--start {
+  align-items: flex-start;
+}
+
+/* Big numeric readouts: tabular so digits don't shift the layout as they tick */
+.readout {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(1.5rem, 8vw, 3rem);
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.label {
+  font-size: clamp(0.7rem, 2.5vw, 0.85rem);
+  color: var(--muted);
+  letter-spacing: 0.01em;
+}
+
+/* Progress: a hairline + marker/fill, not a rounded pill bar */
+.tick-line {
+  position: relative;
+  width: 60%;
+  max-width: 200px;
+  height: 1px;
+  background: var(--line);
+  margin: var(--gap-xs) 0;
+}
+
+.tick-line__fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 1px;
+  background: var(--ink);
+}
+
+.tick-line__marker {
+  position: absolute;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--brass);
+  transform: translate(-50%, -50%);
+}
+
+/* Reserved for the single "this is active right now" signal — used sparingly */
+.is-live {
+  color: var(--brass);
+}
+
+:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
