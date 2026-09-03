@@ -7,10 +7,11 @@
   <link rel="stylesheet" href="../../shared/style.css">
 
   <style>
-    /* Timer-only layout. The visual language remains controlled by shared/style.css. */
+    /* Timer-specific layout. All visual styling is otherwise inherited from the shared theme. */
     .timer {
+      position: relative;
       display: grid;
-      grid-template-rows: 1fr 42px 44px 28px;
+      grid-template-rows: 1fr 40px 44px 28px;
       min-height: 210px;
       gap: 0;
       align-items: center;
@@ -27,7 +28,7 @@
     }
 
     .timer-message {
-      height: 42px;
+      height: 40px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -37,38 +38,43 @@
       padding: 0 12px;
     }
 
+    /* One fixed action row. Buttons occupy fixed slots so state changes never reflow the row. */
     .timer-actions {
+      width: 180px;
       height: 44px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(2, 86px);
       gap: 8px;
+      align-items: center;
+      justify-content: center;
     }
 
-    .timer-secondary {
-      height: 28px;
+    .timer-slot {
+      width: 86px;
+      height: 34px;
       display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
     }
 
     .timer-btn {
-      min-width: 82px;
+      width: 86px;
       height: 34px;
-      padding: 0 13px;
+      box-sizing: border-box;
       border: 1px solid var(--line, rgba(255,255,255,.075));
       background: var(--surface-2, #1d1d20);
       color: var(--text, #f1f1f0);
       border-radius: 10px;
+      padding: 0 10px;
       font: inherit;
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       cursor: pointer;
-      transition: background .15s ease, transform .12s ease, opacity .15s ease;
+      transition: background .15s ease, opacity .15s ease;
     }
 
     .timer-btn:hover:not(:disabled) {
       background: var(--surface-3, #252529);
-      transform: translateY(-1px);
     }
 
     .timer-btn.primary {
@@ -79,41 +85,39 @@
     }
 
     .timer-btn.secondary {
-      min-width: auto;
-      height: 28px;
-      padding: 0 9px;
-      border: 0;
       background: transparent;
+      border-color: transparent;
       color: var(--muted, #96969c);
-      font-size: 0.72rem;
     }
 
     .timer-btn.secondary:hover:not(:disabled) {
       background: transparent;
       color: var(--text, #f1f1f0);
-      transform: none;
     }
 
-    .timer-btn[hidden] {
-      display: inline-flex;
+    .timer-btn:disabled {
+      display: none;
+    }
+
+    /* Invisible placeholders preserve the exact slot geometry. */
+    .timer-btn[aria-hidden="true"] {
       visibility: hidden;
       pointer-events: none;
+      display: block;
     }
 
-    .timer-actions .timer-btn[hidden] {
-      display: inline-flex;
+    .timer-restart {
+      height: 28px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    .timer-btn:disabled:not([hidden]) {
-      opacity: .42;
-      cursor: default;
-    }
-
-    @media (max-width: 360px) {
-      .timer-btn {
-        min-width: 76px;
-        padding: 0 10px;
-      }
+    .timer-restart .timer-btn {
+      width: auto;
+      min-width: 86px;
+      height: 28px;
+      font-size: 0.7rem;
     }
   </style>
 </head>
@@ -127,15 +131,12 @@
         Sude, hazırsan başlayalım.
       </div>
 
-      <div class="timer-actions">
-        <button class="timer-btn primary" id="start">Başlat</button>
-        <button class="timer-btn" id="pause" hidden>Duraklat</button>
-        <button class="timer-btn primary" id="resume" hidden>Devam Et</button>
-        <button class="timer-btn" id="finish" hidden>Bitir</button>
-        <button class="timer-btn primary" id="save" hidden>Kaydet</button>
+      <div class="timer-actions" aria-label="Timer controls">
+        <div class="timer-slot" id="slotA"></div>
+        <div class="timer-slot" id="slotB"></div>
       </div>
 
-      <div class="timer-secondary">
+      <div class="timer-restart">
         <button class="timer-btn secondary" id="restart">↻ Yeniden başlat</button>
       </div>
     </section>
@@ -143,7 +144,7 @@
 
   <script>
     /*
-      Timer state is deliberately independent from the UI.
+      Timer state is independent from the interface.
       Future Notion integration can use:
         state.elapsedSeconds
         state.finished
@@ -164,12 +165,8 @@
 
     const display = document.getElementById("display");
     const message = document.getElementById("message");
-
-    const start = document.getElementById("start");
-    const pause = document.getElementById("pause");
-    const resume = document.getElementById("resume");
-    const finish = document.getElementById("finish");
-    const save = document.getElementById("save");
+    const slotA = document.getElementById("slotA");
+    const slotB = document.getElementById("slotB");
     const restart = document.getElementById("restart");
 
     function formatTime(totalSeconds) {
@@ -182,18 +179,72 @@
         .join(":");
     }
 
-    function setVisible(element, visible) {
-      element.hidden = !visible;
+    function createButton(label, className, handler) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = `timer-btn ${className || ""}`.trim();
+      button.textContent = label;
+      button.addEventListener("click", handler);
+      return button;
+    }
+
+    function emptySlot(slot) {
+      slot.replaceChildren();
+      const placeholder = document.createElement("button");
+      placeholder.type = "button";
+      placeholder.className = "timer-btn";
+      placeholder.setAttribute("aria-hidden", "true");
+      placeholder.tabIndex = -1;
+      placeholder.textContent = "";
+      slot.appendChild(placeholder);
+    }
+
+    function setActionRow() {
+      /*
+        Always render exactly two fixed-width slots.
+        This is what prevents the buttons from shifting when state changes.
+      */
+      emptySlot(slotA);
+      emptySlot(slotB);
+
+      if (!state.startedOnce) {
+        slotA.replaceChildren(
+          createButton("Başlat", "primary", startTimer)
+        );
+        return;
+      }
+
+      if (state.finished) {
+        slotA.replaceChildren(
+          createButton(
+            state.saved ? "Kaydedildi" : "Kaydet",
+            state.saved ? "" : "primary",
+            saveTimer
+          )
+        );
+        return;
+      }
+
+      if (state.running) {
+        slotA.replaceChildren(
+          createButton("Duraklat", "", pauseTimer)
+        );
+        slotB.replaceChildren(
+          createButton("Bitir", "", finishTimer)
+        );
+        return;
+      }
+
+      slotA.replaceChildren(
+        createButton("Devam et", "primary", startTimer)
+      );
+      slotB.replaceChildren(
+        createButton("Bitir", "", finishTimer)
+      );
     }
 
     function render() {
       display.textContent = formatTime(state.elapsedSeconds);
-
-      setVisible(start, !state.startedOnce);
-      setVisible(pause, state.running);
-      setVisible(resume, state.startedOnce && !state.running && !state.finished);
-      setVisible(finish, state.startedOnce && !state.finished);
-      setVisible(save, state.finished && !state.saved);
 
       if (!state.startedOnce) {
         message.textContent = "Sude, hazırsan başlayalım.";
@@ -202,10 +253,12 @@
       } else if (state.finished && state.saved) {
         message.textContent = "Kaydedildi.";
       } else if (state.finished) {
-        message.textContent = "Oturum bitti. Kaydetmek ister misin?";
+        message.textContent = "Oturum bitti. Kaydetmeye hazır.";
       } else {
         message.textContent = "Duraklatıldı.";
       }
+
+      setActionRow();
     }
 
     function tick() {
@@ -275,21 +328,16 @@
       if (!state.finished || state.saved) return;
 
       /*
-        Future Notion integration:
-        send state.elapsedSeconds and the current date/time
-        to the selected Notion database here.
+        Future Notion integration point:
+        send state.elapsedSeconds and the current date/time to the chosen
+        Notion database here.
       */
 
       state.saved = true;
       render();
     }
 
-    start.addEventListener("click", startTimer);
-    pause.addEventListener("click", pauseTimer);
-    resume.addEventListener("click", startTimer);
-    finish.addEventListener("click", finishTimer);
     restart.addEventListener("click", restartTimer);
-    save.addEventListener("click", saveTimer);
 
     render();
   </script>
