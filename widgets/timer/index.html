@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timer</title>
+  <link rel="stylesheet" href="../../shared/style.css">
+  <style>
+    .timer {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      min-height: 180px;
+      justify-content: center;
+    }
+
+    .timer-display {
+      font-variant-numeric: tabular-nums;
+      font-size: clamp(2.6rem, 9vw, 4.8rem);
+      line-height: 1;
+      letter-spacing: -0.04em;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .timer-status {
+      text-align: center;
+      color: var(--muted, #96969c);
+      font-size: 0.78rem;
+      min-height: 1em;
+    }
+
+    .timer-controls {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .timer-button {
+      border: 1px solid var(--line, rgba(255,255,255,.075));
+      background: var(--surface-2, #1d1d20);
+      color: var(--text, #f1f1f0);
+      border-radius: 10px;
+      padding: 8px 14px;
+      font: inherit;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: background .15s ease, border-color .15s ease, opacity .15s ease;
+    }
+
+    .timer-button:hover {
+      background: var(--surface-3, #252529);
+    }
+
+    .timer-button.primary {
+      background: var(--accent, #f0c95a);
+      color: #111;
+      border-color: transparent;
+      font-weight: 600;
+    }
+
+    .timer-button:disabled {
+      opacity: .4;
+      cursor: default;
+    }
+  </style>
+</head>
+<body>
+  <main class="widget">
+    <section class="card timer">
+      <div class="timer-display" id="display">00:00:00</div>
+      <div class="timer-status" id="status">Ready</div>
+
+      <div class="timer-controls">
+        <button class="timer-button primary" id="start">Start</button>
+        <button class="timer-button" id="pause" disabled>Pause</button>
+        <button class="timer-button" id="finish" disabled>Finish</button>
+        <button class="timer-button" id="restart">Restart</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    /*
+      Timer state is kept separately from the UI so a future Save action
+      can read the completed duration directly from `elapsedSeconds`.
+    */
+
+    let elapsedSeconds = 0;
+    let timerId = null;
+    let running = false;
+
+    const display = document.getElementById("display");
+    const status = document.getElementById("status");
+    const startButton = document.getElementById("start");
+    const pauseButton = document.getElementById("pause");
+    const finishButton = document.getElementById("finish");
+    const restartButton = document.getElementById("restart");
+
+    function formatTime(totalSeconds) {
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+
+      return [hours, minutes, seconds]
+        .map(value => String(value).padStart(2, "0"))
+        .join(":");
+    }
+
+    function render() {
+      display.textContent = formatTime(elapsedSeconds);
+    }
+
+    function startTimer() {
+      if (running) return;
+
+      running = true;
+      status.textContent = "Running";
+      startButton.disabled = true;
+      pauseButton.disabled = false;
+      finishButton.disabled = false;
+
+      timerId = setInterval(() => {
+        elapsedSeconds += 1;
+        render();
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      if (!running) return;
+
+      clearInterval(timerId);
+      timerId = null;
+      running = false;
+      status.textContent = "Paused";
+      startButton.disabled = false;
+      pauseButton.disabled = true;
+    }
+
+    function finishTimer() {
+      if (timerId !== null) {
+        clearInterval(timerId);
+        timerId = null;
+      }
+
+      running = false;
+      status.textContent = "Finished";
+      startButton.disabled = true;
+      pauseButton.disabled = true;
+      finishButton.disabled = true;
+
+      /*
+        `elapsedSeconds` is intentionally preserved here.
+        A future Save button can use this value to send the session
+        duration to Notion without changing the timer logic.
+      */
+    }
+
+    function restartTimer() {
+      if (timerId !== null) {
+        clearInterval(timerId);
+        timerId = null;
+      }
+
+      elapsedSeconds = 0;
+      running = false;
+      status.textContent = "Ready";
+      startButton.disabled = false;
+      pauseButton.disabled = true;
+      finishButton.disabled = true;
+      render();
+    }
+
+    startButton.addEventListener("click", startTimer);
+    pauseButton.addEventListener("click", pauseTimer);
+    finishButton.addEventListener("click", finishTimer);
+    restartButton.addEventListener("click", restartTimer);
+
+    render();
+  </script>
+</body>
+</html>
