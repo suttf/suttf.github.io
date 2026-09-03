@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>deep-work</title>
+<link rel="stylesheet" href="../../shared/theme.css">
+<script src="../../shared/config.js"></script>
+</head><body><div class="widget"><div class="label">Deep Work</div><div class="value" id="value"></div><div class="sub">today</div></div>
+<script>
+const h=window.WIDGET_CONFIG?.deepWorkTodayHours ?? 0;
+const total=Math.round(h*60);
+document.getElementById("value").textContent=`${Math.floor(total/60)}h ${total%60}m`;
+</script></body></html>

@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>stopwatch</title>
+<link rel="stylesheet" href="../../shared/theme.css">
+<script src="../../shared/config.js"></script>
+</head><body><div class="widget"><div class="label">Focus Stopwatch</div><div class="value" id="value">00:00:00</div><div class="sub"><button id="start">Start</button> <button id="reset">Reset</button></div></div>
+<script>
+let seconds=0,running=false,interval;
+const pad=n=>String(n).padStart(2,"0");
+function render(){
+ const h=Math.floor(seconds/3600),m=Math.floor(seconds%3600/60),s=seconds%60;
+ document.getElementById("value").textContent=`${pad(h)}:${pad(m)}:${pad(s)}`;
+}
+document.getElementById("start").onclick=()=>{
+ running=!running;
+ document.getElementById("start").textContent=running?"Pause":"Start";
+ if(running) interval=setInterval(()=>{seconds++;render()},1000); else clearInterval(interval);
+};
+document.getElementById("reset").onclick=()=>{
+ clearInterval(interval);running=false;seconds=0;
+ document.getElementById("start").textContent="Start";render();
+};
+</script></body></html>

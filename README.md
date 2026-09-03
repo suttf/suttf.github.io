@@ -1,32 +1,26 @@
-# Sude Academic Widgets
+# Suttf Widget Library V3
 
-A small, self-contained widget dashboard designed to be embedded into Notion.
+This is the modular version of the Notion widget system.
 
-## Included
-- Dynamic date / greeting
-- Live clock
-- Countdown
-- Daily study progress
-- Study time
-- Deep work time
-- Focus timer
-- Weekly study overview
+Each widget is independent and can be embedded separately:
 
-## Personalize
-Open `script.js` and edit the `CONFIG` object:
-- `name`
-- `countdownDate`
-- `dailyGoalHours`
-- `studyTodayHours`
-- `deepWorkTodayHours`
-- `weekHours`
+- `/widgets/clock/`
+- `/widgets/date/`
+- `/widgets/countdown/`
+- `/widgets/stopwatch/`
+- `/widgets/study-time/`
+- `/widgets/deep-work/`
+- `/widgets/daily-progress/`
+- `/widgets/weekly-study/`
 
-## Put it in Notion
-The widget must be hosted at a public HTTPS URL. Once hosted:
-1. Copy the URL.
-2. In Notion type `/embed`.
-3. Paste the URL.
-4. Resize the embed.
+Shared files:
+- `shared/theme.css` controls the visual system.
+- `shared/config.js` contains temporary demo data.
 
-## Next phase
-The demo data can later be replaced by live Notion API data. That requires a small backend so the Notion secret is not exposed in the browser.
+## Notion
+Embed only the widget URL you need. The widgets do not depend on the library home page.
+
+## Next
+1. Design the theme together.
+2. Add richer widgets.
+3. Connect study data to Notion through a backend/API.

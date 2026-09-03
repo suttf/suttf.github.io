@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>weekly-study</title>
+<link rel="stylesheet" href="../../shared/theme.css">
+<script src="../../shared/config.js"></script>
+</head><body><div class="widget"><div class="label">Weekly Study</div><div class="value" id="value"></div><div class="sub">Mon · Tue · Wed · Thu · Fri · Sat · Sun</div></div>
+<script>
+const hours=window.WIDGET_CONFIG?.weekHours||[],total=hours.reduce((a,b)=>a+b,0);
+document.getElementById("value").textContent=`${total.toFixed(1)}h`;
+</script></body></html>
