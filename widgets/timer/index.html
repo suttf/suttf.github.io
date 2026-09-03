@@ -1,43 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Timer</title>
   <link rel="stylesheet" href="../../shared/style.css">
+
   <style>
+    /* Timer-specific layout only. Visual language comes from shared/style.css. */
     .timer {
       display: flex;
       flex-direction: column;
-      gap: 18px;
-      min-height: 180px;
+      gap: 16px;
+      min-height: 190px;
       justify-content: center;
     }
 
     .timer-display {
-      font-variant-numeric: tabular-nums;
-      font-size: clamp(2.6rem, 9vw, 4.8rem);
-      line-height: 1;
-      letter-spacing: -0.04em;
       text-align: center;
+      font-variant-numeric: tabular-nums;
+      font-size: clamp(2.7rem, 10vw, 4.8rem);
+      line-height: 1;
+      letter-spacing: -0.045em;
       font-weight: 600;
     }
 
-    .timer-status {
+    .timer-message {
       text-align: center;
+      min-height: 38px;
       color: var(--muted, #96969c);
-      font-size: 0.78rem;
-      min-height: 1em;
+      font-size: 0.82rem;
+      line-height: 1.45;
     }
 
-    .timer-controls {
+    .timer-message strong {
+      color: var(--text, #f1f1f0);
+      font-weight: 600;
+    }
+
+    .timer-actions {
       display: flex;
       justify-content: center;
+      align-items: center;
       gap: 8px;
       flex-wrap: wrap;
     }
 
-    .timer-button {
+    .timer-btn {
       border: 1px solid var(--line, rgba(255,255,255,.075));
       background: var(--surface-2, #1d1d20);
       color: var(--text, #f1f1f0);
@@ -46,57 +55,95 @@
       font: inherit;
       font-size: 0.8rem;
       cursor: pointer;
-      transition: background .15s ease, border-color .15s ease, opacity .15s ease;
+      transition: transform .12s ease, background .15s ease, opacity .15s ease;
     }
 
-    .timer-button:hover {
+    .timer-btn:hover:not(:disabled) {
       background: var(--surface-3, #252529);
+      transform: translateY(-1px);
     }
 
-    .timer-button.primary {
+    .timer-btn.primary {
       background: var(--accent, #f0c95a);
       color: #111;
       border-color: transparent;
       font-weight: 600;
     }
 
-    .timer-button:disabled {
-      opacity: .4;
-      cursor: default;
+    .timer-btn.danger {
+      color: var(--red, #f08b8b);
+    }
+
+    .timer-btn:disabled {
+      display: none;
+    }
+
+    .timer-subaction {
+      display: flex;
+      justify-content: center;
+      min-height: 30px;
+    }
+
+    .timer-subaction .timer-btn {
+      padding: 6px 10px;
+      font-size: 0.72rem;
+    }
+
+    .timer-saved {
+      color: var(--green, #b9e77d);
     }
   </style>
 </head>
+
 <body>
   <main class="widget">
-    <section class="card timer">
+    <section class="card timer" id="timerCard">
       <div class="timer-display" id="display">00:00:00</div>
-      <div class="timer-status" id="status">Ready</div>
 
-      <div class="timer-controls">
-        <button class="timer-button primary" id="start">Start</button>
-        <button class="timer-button" id="pause" disabled>Pause</button>
-        <button class="timer-button" id="finish" disabled>Finish</button>
-        <button class="timer-button" id="restart">Restart</button>
+      <div class="timer-message" id="message">
+        Sude, hazırsan başlayalım.
+      </div>
+
+      <div class="timer-actions">
+        <button class="timer-btn primary" id="start">Başlat</button>
+        <button class="timer-btn" id="pause" disabled>Duraklat</button>
+        <button class="timer-btn primary" id="resume" disabled>Devam Et</button>
+        <button class="timer-btn" id="finish" disabled>Bitir</button>
+      </div>
+
+      <div class="timer-subaction">
+        <button class="timer-btn danger" id="restart">Yeniden Başlat</button>
+        <button class="timer-btn" id="save" disabled>Kaydet</button>
       </div>
     </section>
   </main>
 
   <script>
     /*
-      Timer state is kept separately from the UI so a future Save action
-      can read the completed duration directly from `elapsedSeconds`.
+      Timer state is intentionally kept separate from the UI.
+      Future Notion integration can read `elapsedSeconds` after Finish
+      and send that value to a database without changing the timer engine.
     */
 
-    let elapsedSeconds = 0;
-    let timerId = null;
-    let running = false;
+    const state = {
+      elapsedSeconds: 0,
+      running: false,
+      finished: false,
+      saved: false,
+      startedOnce: false,
+      lastTick: null
+    };
+
+    let intervalId = null;
 
     const display = document.getElementById("display");
-    const status = document.getElementById("status");
-    const startButton = document.getElementById("start");
-    const pauseButton = document.getElementById("pause");
-    const finishButton = document.getElementById("finish");
-    const restartButton = document.getElementById("restart");
+    const message = document.getElementById("message");
+    const start = document.getElementById("start");
+    const pause = document.getElementById("pause");
+    const resume = document.getElementById("resume");
+    const finish = document.getElementById("finish");
+    const restart = document.getElementById("restart");
+    const save = document.getElementById("save");
 
     function formatTime(totalSeconds) {
       const hours = Math.floor(totalSeconds / 3600);
@@ -109,73 +156,113 @@
     }
 
     function render() {
-      display.textContent = formatTime(elapsedSeconds);
+      display.textContent = formatTime(state.elapsedSeconds);
+
+      start.disabled = state.startedOnce;
+      pause.disabled = !state.running;
+      resume.disabled = !(state.startedOnce && !state.running && !state.finished);
+      finish.disabled = !(state.startedOnce && !state.finished);
+      save.disabled = !(state.finished && !state.saved);
+
+      if (!state.startedOnce) {
+        message.innerHTML = "Sude, hazırsan başlayalım.";
+      } else if (state.running) {
+        message.innerHTML = "Çalışıyoruz. ⏱️";
+      } else if (state.finished && state.saved) {
+        message.innerHTML = '<span class="timer-saved">Oturum kaydedildi. ✓</span>';
+      } else if (state.finished) {
+        message.innerHTML = 'Oturum tamamlandı. <strong>Kaydetmeye hazır.</strong>';
+      } else {
+        message.innerHTML = 'Kısa bir mola. Hazır olduğunda devam et.';
+      }
+    }
+
+    function tick() {
+      const now = Date.now();
+      const delta = Math.floor((now - state.lastTick) / 1000);
+
+      if (delta > 0) {
+        state.elapsedSeconds += delta;
+        state.lastTick += delta * 1000;
+        display.textContent = formatTime(state.elapsedSeconds);
+      }
     }
 
     function startTimer() {
-      if (running) return;
+      if (state.running || state.finished) return;
 
-      running = true;
-      status.textContent = "Running";
-      startButton.disabled = true;
-      pauseButton.disabled = false;
-      finishButton.disabled = false;
+      state.running = true;
+      state.startedOnce = true;
+      state.lastTick = Date.now();
 
-      timerId = setInterval(() => {
-        elapsedSeconds += 1;
-        render();
-      }, 1000);
-    }
-
-    function pauseTimer() {
-      if (!running) return;
-
-      clearInterval(timerId);
-      timerId = null;
-      running = false;
-      status.textContent = "Paused";
-      startButton.disabled = false;
-      pauseButton.disabled = true;
-    }
-
-    function finishTimer() {
-      if (timerId !== null) {
-        clearInterval(timerId);
-        timerId = null;
-      }
-
-      running = false;
-      status.textContent = "Finished";
-      startButton.disabled = true;
-      pauseButton.disabled = true;
-      finishButton.disabled = true;
-
-      /*
-        `elapsedSeconds` is intentionally preserved here.
-        A future Save button can use this value to send the session
-        duration to Notion without changing the timer logic.
-      */
-    }
-
-    function restartTimer() {
-      if (timerId !== null) {
-        clearInterval(timerId);
-        timerId = null;
-      }
-
-      elapsedSeconds = 0;
-      running = false;
-      status.textContent = "Ready";
-      startButton.disabled = false;
-      pauseButton.disabled = true;
-      finishButton.disabled = true;
+      intervalId = setInterval(tick, 250);
       render();
     }
 
-    startButton.addEventListener("click", startTimer);
-    pauseButton.addEventListener("click", pauseTimer);
-    finishButton.addEventListener("click", finishTimer);
-    restartButton.addEventListener("click", restartTimer);
+    function pauseTimer() {
+      if (!state.running) return;
+
+      tick();
+      clearInterval(intervalId);
+      intervalId = null;
+      state.running = false;
+      render();
+    }
+
+    function finishTimer() {
+      if (!state.startedOnce || state.finished) return;
+
+      if (state.running) {
+        tick();
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+
+      state.running = false;
+      state.finished = true;
+      state.saved = false;
+      render();
+    }
+
+    function restartTimer() {
+      if (state.elapsedSeconds > 0 && !state.finished) {
+        const confirmed = window.confirm("Bu oturumu sıfırlamak istediğine emin misin?");
+        if (!confirmed) return;
+      }
+
+      clearInterval(intervalId);
+      intervalId = null;
+
+      state.elapsedSeconds = 0;
+      state.running = false;
+      state.finished = false;
+      state.saved = false;
+      state.startedOnce = false;
+      state.lastTick = null;
+
+      render();
+    }
+
+    function saveTimer() {
+      if (!state.finished || state.saved) return;
+
+      /*
+        Future Notion integration point:
+        - state.elapsedSeconds
+        - new Date()
+        can be sent to the chosen Notion database here.
+      */
+
+      state.saved = true;
+      render();
+    }
+
+    start.addEventListener("click", startTimer);
+    pause.addEventListener("click", pauseTimer);
+    resume.addEventListener("click", startTimer);
+    finish.addEventListener("click", finishTimer);
+    restart.addEventListener("click", restartTimer);
+    save.addEventListener("click", saveTimer);
 
     render();
   </script>
