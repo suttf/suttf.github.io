@@ -7,12 +7,12 @@
   --muted: #8a7562;
   --shadow: rgba(58, 42, 31, 0.18);
 
-  --sage: #6e9464;
-  --mustard: #e3b23c;
-  --rust: #c15b2e;
-  --plum: #a83e72;
-  --periwinkle: #7c82b0;
-  --olive: #6e7a2e;
+  --sage: #A37E84;
+  --mustard: #CDADAB;
+  --rust: #917F88;
+  --plum: #B18A93;
+  --periwinkle: #EBD7CE;
+  --olive: #836871;
 
   /* type */
   --font-sans: ui-rounded, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
