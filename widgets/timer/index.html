@@ -77,9 +77,9 @@
     <div class="timer-actions">
       <div id="primaryRow" class="timer-primary-row single">
         <button id="primaryA" class="ui-button timer-button" type="button">Başlat</button>
-        <button id="primaryB" class="ui-button timer-button" type="button" hidden>Bitir</button>
+        <button id="primaryB" class="ui-button ui-button--secondary timer-button" type="button" hidden>Bitir</button>
       </div>
-      <button id="restart" class="timer-button secondary timer-restart" type="button">Yeniden başlat</button>
+      <button id="restart" class="ui-button ui-button--secondary timer-button timer-restart" type="button">Yeniden başlat</button>
     </div>
   </main>
 
@@ -111,11 +111,9 @@
       if (finished) {
         message.textContent = 'Tamamlandı.';
         primaryRow.classList.add('single');
-        primaryA.textContent = 'Yeniden başlat';
-        primaryA.className = 'ui-button timer-button';
-        primaryA.hidden = false;
+        primaryA.hidden = true;
         primaryB.hidden = true;
-        restart.style.display = 'none';
+        restart.style.display = '';
         return;
       }
 
