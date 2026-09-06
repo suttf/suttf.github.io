@@ -179,3 +179,54 @@ body {
     animation: none !important;
   }
 }
+
+
+/* Shared controls */
+.button,
+button {
+  font-family: var(--font-sans);
+}
+
+.ui-button {
+  appearance: none;
+  min-height: 46px;
+  padding: 0 1.35rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 72%, white 8%);
+  border-radius: 14px;
+  background: var(--accent);
+  color: #26151c;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.045em;
+  cursor: pointer;
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--accent) 22%, transparent);
+  transition: transform 140ms ease, background 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+}
+
+.ui-button:hover {
+  background: color-mix(in srgb, var(--accent) 88%, white 12%);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+.ui-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.ui-button--secondary {
+  background: color-mix(in srgb, var(--surface-deep) 88%, var(--accent) 12%);
+  color: var(--ink);
+  border-color: color-mix(in srgb, var(--accent) 46%, white 4%);
+  box-shadow: 0 5px 14px color-mix(in srgb, var(--shadow) 75%, transparent);
+}
+
+.ui-button--secondary:hover {
+  background: color-mix(in srgb, var(--surface-soft) 76%, var(--accent) 24%);
+  border-color: color-mix(in srgb, var(--accent) 68%, white 5%);
+  box-shadow: 0 7px 18px color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.ui-button--secondary:active {
+  box-shadow: 0 3px 9px color-mix(in srgb, var(--accent) 10%, transparent);
+}
