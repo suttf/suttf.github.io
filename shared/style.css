@@ -1,49 +1,52 @@
 :root {
   color-scheme: dark light;
 
-  /* Shared palette */
-  --sage: #A37E84;
-  --mustard: #CDADAB;
-  --rust: #917F88;
-  --plum: #B18A93;
-  --periwinkle: #EBD7CE;
-  --olive: #836871;
+  /* Shared accent palette */
+  --sage: #C87589;
+  --mustard: #E4A08F;
+  --rust: #A95D73;
+  --plum: #D97794;
+  --periwinkle: #F2B7C4;
+  --olive: #92566B;
 
   /* Core surfaces */
-  --paper: #302127;
-  --ink: #F4E4E7;
-  --muted: #D0AEB5;
-  --shadow: rgba(12, 7, 10, 0.30);
-  --surface-soft: #38262D;
-  --border-soft: rgba(205, 173, 171, 0.48);
+  --paper: #28181F;
+  --ink: #FFE1E7;
+  --muted: #D99BAA;
+  --shadow: rgba(7, 3, 6, 0.48);
+  --surface-soft: #321D26;
+  --surface-deep: #211319;
+  --border-soft: rgba(217, 119, 148, 0.68);
 
   /* Type */
-  --font-sans: ui-rounded, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-mono: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  --font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 
   /* Spacing */
   --gap-xs: 0.25rem;
   --gap-sm: 0.5rem;
   --gap-md: 1rem;
-  --radius: 18px;
+  --radius: 22px;
 }
 
 [data-theme="dark"] {
-  --paper: #302127;
-  --ink: #F4E4E7;
-  --muted: #D0AEB5;
-  --shadow: rgba(12, 7, 10, 0.30);
-  --surface-soft: #38262D;
-  --border-soft: rgba(205, 173, 171, 0.48);
+  --paper: #28181F;
+  --ink: #FFE1E7;
+  --muted: #D99BAA;
+  --shadow: rgba(7, 3, 6, 0.48);
+  --surface-soft: #321D26;
+  --surface-deep: #211319;
+  --border-soft: rgba(217, 119, 148, 0.68);
 }
 
 [data-theme="light"] {
-  --paper: #F1E2E3;
-  --ink: #3B2930;
-  --muted: #765B64;
-  --shadow: rgba(57, 38, 45, 0.13);
-  --surface-soft: #F7ECEE;
-  --border-soft: rgba(131, 104, 113, 0.32);
+  --paper: #F7E8EB;
+  --ink: #43252F;
+  --muted: #875462;
+  --shadow: rgba(68, 34, 45, 0.15);
+  --surface-soft: #FFF4F5;
+  --surface-deep: #F0DDE1;
+  --border-soft: rgba(146, 86, 107, 0.42);
 }
 
 * {
@@ -64,13 +67,12 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  padding: var(--gap-sm);
+  padding: 1rem;
 }
 
 /*
-  Shared widget shell.
-  The outer line stays quiet while the inner line gives the panel the
-  layered frame from the reference without making the border feel heavy.
+  Shared shell: dark layered panel, vivid accent frame, generous breathing room.
+  Individual widgets inherit this language and can override only what they need.
 */
 .card {
   --accent: var(--sage);
@@ -79,24 +81,27 @@ body {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.85rem;
-  min-width: 220px;
+  gap: 1.15rem;
+  min-width: 260px;
   max-width: 100%;
-  padding: 2.15rem 2.35rem;
+  padding: 3rem 3.6rem;
   background: var(--paper);
   color: var(--ink);
-  border: 1px solid color-mix(in srgb, var(--accent) 72%, transparent);
-  border-radius: 26px;
-  box-shadow: 0 12px 30px var(--shadow);
+  border: 1.5px solid color-mix(in srgb, var(--accent) 82%, transparent);
+  border-radius: 30px;
+  box-shadow:
+    0 18px 42px var(--shadow),
+    0 0 26px color-mix(in srgb, var(--accent) 10%, transparent);
 }
 
 .card::before {
   content: "";
   position: absolute;
-  inset: 9px;
+  inset: 10px;
   z-index: -1;
-  border: 2px solid color-mix(in srgb, var(--accent) 72%, transparent);
-  border-radius: 19px;
+  border: 3px solid color-mix(in srgb, var(--accent) 72%, transparent);
+  border-radius: 23px;
+  background: color-mix(in srgb, var(--surface-soft) 88%, transparent);
   pointer-events: none;
 }
 
@@ -107,21 +112,22 @@ body {
 
 /* Big numeric readouts */
 .readout {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-variant-numeric: tabular-nums;
-  font-size: clamp(1.8rem, 7vw, 3.2rem);
+  font-size: clamp(2.15rem, 8vw, 4rem);
   line-height: 0.98;
-  letter-spacing: -0.035em;
-  font-weight: 700;
-  color: color-mix(in srgb, var(--accent) 78%, var(--periwinkle));
+  letter-spacing: -0.055em;
+  font-weight: 800;
+  color: color-mix(in srgb, var(--accent) 92%, white);
+  text-shadow: 0 0 18px color-mix(in srgb, var(--accent) 12%, transparent);
 }
 
 .label {
-  font-size: clamp(0.78rem, 2.5vw, 0.95rem);
+  font-size: clamp(0.85rem, 2.6vw, 1.05rem);
   line-height: 1.25;
   color: var(--muted);
-  letter-spacing: 0;
-  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-weight: 650;
 }
 
 .tick-line {
@@ -129,7 +135,7 @@ body {
   width: 100%;
   height: 5px;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--ink) 12%, transparent);
+  background: color-mix(in srgb, var(--ink) 13%, transparent);
   overflow: hidden;
 }
 
@@ -141,24 +147,24 @@ body {
 
 .is-live {
   color: var(--accent);
-  font-weight: 700;
+  font-weight: 750;
 }
 
 :focus-visible {
   outline: 2px solid var(--accent, var(--sage));
-  outline-offset: 3px;
+  outline-offset: 4px;
 }
 
 @media (max-width: 480px) {
   .card {
-    min-width: min(220px, calc(100vw - 1rem));
-    padding: 1.75rem 1.7rem;
-    border-radius: 23px;
+    min-width: min(260px, calc(100vw - 1.5rem));
+    padding: 2.35rem 2rem;
+    border-radius: 27px;
   }
 
   .card::before {
-    inset: 8px;
-    border-radius: 17px;
+    inset: 9px;
+    border-radius: 21px;
   }
 }
 
