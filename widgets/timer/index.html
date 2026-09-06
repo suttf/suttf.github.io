@@ -1,343 +1,196 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Timer</title>
   <link rel="stylesheet" href="../../shared/style.css">
-
   <style>
-    /* Timer-specific layout. All visual styling is otherwise inherited from the shared theme. */
-    .timer {
-      position: relative;
-      display: grid;
-      grid-template-rows: 1fr 40px 44px 28px;
-      min-height: 210px;
+    .timer-widget {
+      width: min(100%, 520px);
+      min-height: 330px;
+      padding: 4.4rem 4.5rem 3.8rem;
       gap: 0;
-      align-items: center;
-      text-align: center;
     }
 
     .timer-display {
+      font-size: clamp(2.75rem, 10vw, 4.65rem);
+      line-height: .95;
+      letter-spacing: -.06em;
       font-variant-numeric: tabular-nums;
-      font-size: clamp(2.7rem, 10vw, 4.8rem);
-      line-height: 1;
-      letter-spacing: -0.045em;
-      font-weight: 600;
+      color: var(--accent);
+      font-weight: 800;
       white-space: nowrap;
+      text-shadow: 0 0 22px color-mix(in srgb, var(--accent) 15%, transparent);
     }
 
     .timer-message {
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--muted, #96969c);
-      font-size: 0.8rem;
-      line-height: 1.35;
-      padding: 0 12px;
-    }
-
-    /* One fixed action row. Buttons occupy fixed slots so state changes never reflow the row. */
-    .timer-actions {
-      width: 180px;
-      height: 44px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(2, 86px);
-      gap: 8px;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .timer-slot {
-      width: 86px;
-      height: 34px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .timer-btn {
-      width: 86px;
-      height: 34px;
-      box-sizing: border-box;
-      border: 1px solid var(--line, rgba(255,255,255,.075));
-      background: var(--surface-2, #1d1d20);
-      color: var(--text, #f1f1f0);
-      border-radius: 10px;
-      padding: 0 10px;
-      font: inherit;
-      font-size: 0.76rem;
-      cursor: pointer;
-      transition: background .15s ease, opacity .15s ease;
-    }
-
-    .timer-btn:hover:not(:disabled) {
-      background: var(--surface-3, #252529);
-    }
-
-    .timer-btn.primary {
-      background: var(--accent, #f0c95a);
-      color: #111;
-      border-color: transparent;
+      margin-top: 1.35rem;
+      min-height: 1.4em;
+      color: var(--muted);
+      font-size: .86rem;
+      line-height: 1.4;
       font-weight: 600;
     }
 
-    .timer-btn.secondary {
-      background: transparent;
-      border-color: transparent;
-      color: var(--muted, #96969c);
+    .timer-actions {
+      margin-top: 2.25rem;
+      width: min(100%, 330px);
     }
 
-    .timer-btn.secondary:hover:not(:disabled) {
-      background: transparent;
-      color: var(--text, #f1f1f0);
+    .timer-primary-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .7rem;
+      min-height: 44px;
     }
 
-    .timer-btn:disabled {
-      display: none;
+    .timer-primary-row.single {
+      grid-template-columns: 1fr;
     }
 
-    /* Invisible placeholders preserve the exact slot geometry. */
-    .timer-btn[aria-hidden="true"] {
-      visibility: hidden;
-      pointer-events: none;
-      display: block;
+    .timer-button {
+      width: 100%;
     }
 
     .timer-restart {
-      height: 28px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      margin-top: .85rem;
     }
 
-    .timer-restart .timer-btn {
-      width: auto;
-      min-width: 86px;
-      height: 28px;
-      font-size: 0.7rem;
+    @media (max-width: 480px) {
+      .timer-widget {
+        width: min(100%, 420px);
+        min-height: 300px;
+        padding: 3.5rem 2.3rem 3rem;
+      }
+
+      .timer-actions { width: 100%; }
+      .timer-display { font-size: clamp(2.45rem, 13vw, 4rem); }
     }
   </style>
 </head>
-
 <body>
-  <main class="widget">
-    <section class="card timer" aria-label="Timer">
-      <div class="timer-display" id="display">00:00:00</div>
+  <main class="card timer-widget">
+    <div id="timerDisplay" class="timer-display" aria-live="off">00:00:00</div>
+    <div id="timerMessage" class="timer-message" aria-live="polite">Hazır mısın?</div>
 
-      <div class="timer-message" id="message">
-        Sude, hazırsan başlayalım.
+    <div class="timer-actions">
+      <div id="primaryRow" class="timer-primary-row single">
+        <button id="primaryA" class="ui-button timer-button" type="button">Başlat</button>
+        <button id="primaryB" class="ui-button timer-button" type="button" hidden>Bitir</button>
       </div>
-
-      <div class="timer-actions" aria-label="Timer controls">
-        <div class="timer-slot" id="slotA"></div>
-        <div class="timer-slot" id="slotB"></div>
-      </div>
-
-      <div class="timer-restart">
-        <button class="timer-btn secondary" id="restart">↻ Yeniden başlat</button>
-      </div>
-    </section>
+      <button id="restart" class="timer-button secondary timer-restart" type="button">Yeniden başlat</button>
+    </div>
   </main>
 
   <script>
-    /*
-      Timer state is independent from the interface.
-      Future Notion integration can use:
-        state.elapsedSeconds
-        state.finished
-        state.saved
-      without changing the timer engine.
-    */
+    const display = document.getElementById('timerDisplay');
+    const message = document.getElementById('timerMessage');
+    const primaryRow = document.getElementById('primaryRow');
+    const primaryA = document.getElementById('primaryA');
+    const primaryB = document.getElementById('primaryB');
+    const restart = document.getElementById('restart');
 
-    const state = {
-      elapsedSeconds: 0,
-      running: false,
-      startedOnce: false,
-      finished: false,
-      saved: false,
-      lastTick: null
-    };
+    let elapsedMs = 0;
+    let running = false;
+    let finished = false;
+    let lastTick = null;
+    let rafId = null;
 
-    let intervalId = null;
-
-    const display = document.getElementById("display");
-    const message = document.getElementById("message");
-    const slotA = document.getElementById("slotA");
-    const slotB = document.getElementById("slotB");
-    const restart = document.getElementById("restart");
-
-    function formatTime(totalSeconds) {
+    function formatTime(ms) {
+      const totalSeconds = Math.floor(ms / 1000);
       const hours = Math.floor(totalSeconds / 3600);
       const minutes = Math.floor((totalSeconds % 3600) / 60);
       const seconds = totalSeconds % 60;
-
-      return [hours, minutes, seconds]
-        .map(value => String(value).padStart(2, "0"))
-        .join(":");
-    }
-
-    function createButton(label, className, handler) {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = `timer-btn ${className || ""}`.trim();
-      button.textContent = label;
-      button.addEventListener("click", handler);
-      return button;
-    }
-
-    function emptySlot(slot) {
-      slot.replaceChildren();
-      const placeholder = document.createElement("button");
-      placeholder.type = "button";
-      placeholder.className = "timer-btn";
-      placeholder.setAttribute("aria-hidden", "true");
-      placeholder.tabIndex = -1;
-      placeholder.textContent = "";
-      slot.appendChild(placeholder);
-    }
-
-    function setActionRow() {
-      /*
-        Always render exactly two fixed-width slots.
-        This is what prevents the buttons from shifting when state changes.
-      */
-      emptySlot(slotA);
-      emptySlot(slotB);
-
-      if (!state.startedOnce) {
-        slotA.replaceChildren(
-          createButton("Başlat", "primary", startTimer)
-        );
-        return;
-      }
-
-      if (state.finished) {
-        slotA.replaceChildren(
-          createButton(
-            state.saved ? "Kaydedildi" : "Kaydet",
-            state.saved ? "" : "primary",
-            saveTimer
-          )
-        );
-        return;
-      }
-
-      if (state.running) {
-        slotA.replaceChildren(
-          createButton("Duraklat", "", pauseTimer)
-        );
-        slotB.replaceChildren(
-          createButton("Bitir", "", finishTimer)
-        );
-        return;
-      }
-
-      slotA.replaceChildren(
-        createButton("Devam et", "primary", startTimer)
-      );
-      slotB.replaceChildren(
-        createButton("Bitir", "", finishTimer)
-      );
+      return [hours, minutes, seconds].map(v => String(v).padStart(2, '0')).join(':');
     }
 
     function render() {
-      display.textContent = formatTime(state.elapsedSeconds);
+      display.textContent = formatTime(elapsedMs);
 
-      if (!state.startedOnce) {
-        message.textContent = "Sude, hazırsan başlayalım.";
-      } else if (state.running) {
-        message.textContent = "Çalışıyoruz. ⏱️";
-      } else if (state.finished && state.saved) {
-        message.textContent = "Kaydedildi.";
-      } else if (state.finished) {
-        message.textContent = "Oturum bitti. Kaydetmeye hazır.";
+      if (finished) {
+        message.textContent = 'Tamamlandı.';
+        primaryRow.classList.add('single');
+        primaryA.textContent = 'Yeniden başlat';
+        primaryA.className = 'ui-button timer-button';
+        primaryA.hidden = false;
+        primaryB.hidden = true;
+        restart.style.display = 'none';
+        return;
+      }
+
+      restart.style.display = '';
+      primaryA.hidden = false;
+      primaryB.hidden = false;
+      primaryB.textContent = 'Bitir';
+      primaryB.className = 'ui-button ui-button--secondary timer-button';
+      primaryRow.classList.remove('single');
+
+      if (running) {
+        message.textContent = 'Devam ediyor.';
+        primaryA.textContent = 'Duraklat';
+      } else if (elapsedMs > 0) {
+        message.textContent = 'Duraklatıldı.';
+        primaryA.textContent = 'Devam et';
       } else {
-        message.textContent = "Duraklatıldı.";
-      }
-
-      setActionRow();
-    }
-
-    function tick() {
-      const now = Date.now();
-      const elapsed = Math.floor((now - state.lastTick) / 1000);
-
-      if (elapsed > 0) {
-        state.elapsedSeconds += elapsed;
-        state.lastTick += elapsed * 1000;
-        display.textContent = formatTime(state.elapsedSeconds);
+        message.textContent = 'Hazır mısın?';
+        primaryA.textContent = 'Başlat';
       }
     }
 
-    function startTimer() {
-      if (state.running || state.finished) return;
-
-      state.running = true;
-      state.startedOnce = true;
-      state.lastTick = Date.now();
-
-      intervalId = setInterval(tick, 250);
+    function tick(now) {
+      if (!running) return;
+      if (lastTick !== null) elapsedMs += now - lastTick;
+      lastTick = now;
       render();
+      rafId = requestAnimationFrame(tick);
     }
 
-    function pauseTimer() {
-      if (!state.running) return;
-
-      tick();
-      clearInterval(intervalId);
-      intervalId = null;
-      state.running = false;
-
-      render();
-    }
-
-    function finishTimer() {
-      if (!state.startedOnce || state.finished) return;
-
-      if (state.running) {
-        tick();
-        clearInterval(intervalId);
-        intervalId = null;
+    function startOrResume() {
+      if (finished) {
+        reset();
+        return;
       }
-
-      state.running = false;
-      state.finished = true;
-      state.saved = false;
-
+      if (running) {
+        running = false;
+        lastTick = null;
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = null;
+      } else {
+        running = true;
+        lastTick = performance.now();
+        rafId = requestAnimationFrame(tick);
+      }
       render();
     }
 
-    function restartTimer() {
-      clearInterval(intervalId);
-      intervalId = null;
-
-      state.elapsedSeconds = 0;
-      state.running = false;
-      state.startedOnce = false;
-      state.finished = false;
-      state.saved = false;
-      state.lastTick = null;
-
+    function finish() {
+      if (finished) return;
+      if (running) {
+        const now = performance.now();
+        elapsedMs += now - lastTick;
+      }
+      running = false;
+      finished = true;
+      lastTick = null;
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = null;
       render();
     }
 
-    function saveTimer() {
-      if (!state.finished || state.saved) return;
-
-      /*
-        Future Notion integration point:
-        send state.elapsedSeconds and the current date/time to the chosen
-        Notion database here.
-      */
-
-      state.saved = true;
+    function reset() {
+      elapsedMs = 0;
+      running = false;
+      finished = false;
+      lastTick = null;
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = null;
       render();
     }
 
-    restart.addEventListener("click", restartTimer);
+    primaryA.addEventListener('click', startOrResume);
+    primaryB.addEventListener('click', finish);
+    restart.addEventListener('click', reset);
 
     render();
   </script>
