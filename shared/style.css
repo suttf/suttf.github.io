@@ -1,12 +1,7 @@
 :root {
-  color-scheme: light dark;
+  color-scheme: dark light;
 
-  /* palette — shared cream/ink base + per-widget identity accents */
-  --paper: #f7f1e1;
-  --ink: #3a2a1f;
-  --muted: #8a7562;
-  --shadow: rgba(58, 42, 31, 0.18);
-
+  /* Shared palette */
   --sage: #A37E84;
   --mustard: #CDADAB;
   --rust: #917F88;
@@ -14,22 +9,41 @@
   --periwinkle: #EBD7CE;
   --olive: #836871;
 
-  /* type */
+  /* Core surfaces */
+  --paper: #26191F;
+  --ink: #F1DCE0;
+  --muted: #C49DA5;
+  --shadow: rgba(12, 7, 10, 0.42);
+  --surface-soft: #2D1D24;
+  --border-soft: rgba(177, 138, 147, 0.42);
+
+  /* Type */
   --font-sans: ui-rounded, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
 
-  /* spacing */
+  /* Spacing */
   --gap-xs: 0.25rem;
   --gap-sm: 0.5rem;
   --gap-md: 1rem;
-  --radius: 14px;
+  --radius: 18px;
 }
 
 [data-theme="dark"] {
-  --paper: #2D2529;
-  --ink: #3B3136;
-  --muted: #B18A93;
-  --shadow: rgba(0, 0, 0, 0.35);
+  --paper: #26191F;
+  --ink: #F1DCE0;
+  --muted: #C49DA5;
+  --shadow: rgba(12, 7, 10, 0.42);
+  --surface-soft: #2D1D24;
+  --border-soft: rgba(177, 138, 147, 0.42);
+}
+
+[data-theme="light"] {
+  --paper: #F3E8E8;
+  --ink: #39262D;
+  --muted: #80636B;
+  --shadow: rgba(57, 38, 45, 0.16);
+  --surface-soft: #F8F0F0;
+  --border-soft: rgba(131, 104, 113, 0.38);
 }
 
 * {
@@ -54,54 +68,67 @@ body {
 }
 
 /*
-  Every widget is a "card": shared cream base, dark-brown ink, soft warm
-  shadow, rounded corners — plus ONE identity accent color (--accent),
-  set per widget via an inline style, e.g. style="--accent: var(--sage)".
-  This is what keeps every widget visually part of the same family while
-  each still has its own character.
+  Shared widget shell.
+  The outer line stays quiet while the inner line gives the panel the
+  layered frame from the reference without making the border feel heavy.
 */
 .card {
-  --accent: var(--sage); /* fallback if a widget forgets to set one */
+  --accent: var(--sage);
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--gap-xs);
+  gap: 0.5rem;
+  min-width: 220px;
+  max-width: 100%;
+  padding: 1.55rem 1.7rem;
   background: var(--paper);
   color: var(--ink);
-  border: 2px solid var(--accent);
-  border-radius: var(--radius);
-  box-shadow: 0 4px 14px var(--shadow);
-  padding: var(--gap-md) 1.25rem;
-  max-width: 100%;
+  border: 1px solid color-mix(in srgb, var(--accent) 72%, transparent);
+  border-radius: 24px;
+  box-shadow: 0 12px 30px var(--shadow);
 }
 
-/* Use on text-heavier widgets (current-study, next-task) instead of centered .card */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  z-index: -1;
+  border: 2px solid color-mix(in srgb, var(--accent) 72%, transparent);
+  border-radius: 17px;
+  pointer-events: none;
+}
+
 .card--start {
   align-items: flex-start;
   text-align: left;
 }
 
-/* Big numeric readouts: tabular so digits don't shift the layout as they tick */
+/* Big numeric readouts */
 .readout {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
-  font-size: clamp(1.4rem, 7vw, 2.6rem);
-  line-height: 1;
-  letter-spacing: 0.01em;
+  font-size: clamp(1.8rem, 7vw, 3.2rem);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  font-weight: 700;
+  color: var(--accent);
 }
 
 .label {
-  font-size: clamp(0.7rem, 2.5vw, 0.85rem);
-  color: var(--ink);
-  letter-spacing: 0.01em;
+  font-size: clamp(0.78rem, 2.5vw, 0.95rem);
+  line-height: 1.25;
+  color: var(--muted);
+  letter-spacing: 0;
+  font-weight: 600;
 }
 
-/* Progress: a filled bar in the widget's own accent color */
 .tick-line {
   position: relative;
   width: 100%;
-  height: 6px;
-  border-radius: 3px;
+  height: 5px;
+  border-radius: 999px;
   background: color-mix(in srgb, var(--ink) 12%, transparent);
   overflow: hidden;
 }
@@ -109,18 +136,30 @@ body {
 .tick-line__fill {
   height: 100%;
   background: var(--accent);
-  border-radius: 3px;
+  border-radius: inherit;
 }
 
-/* Reserved for the single "this is active right now" signal */
 .is-live {
   color: var(--accent);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 :focus-visible {
   outline: 2px solid var(--accent, var(--sage));
-  outline-offset: 2px;
+  outline-offset: 3px;
+}
+
+@media (max-width: 480px) {
+  .card {
+    min-width: min(220px, calc(100vw - 1rem));
+    padding: 1.35rem 1.45rem;
+    border-radius: 21px;
+  }
+
+  .card::before {
+    inset: 7px;
+    border-radius: 15px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
