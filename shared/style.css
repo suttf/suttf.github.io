@@ -48,7 +48,9 @@
   --surface-soft: #EEF8E9;
   --surface-deep: #FFF0DE;
   --border-soft: rgba(39, 177, 104, 0.42);
-}* {
+}
+
+* {
   box-sizing: border-box;
 }
 
