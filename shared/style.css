@@ -1,53 +1,86 @@
+```css
 :root {
   color-scheme: dark light;
 
-  /* Vivid shared palette */
-  --rose: #ff6f9c;
-  --coral: #ff8b78;
-  --violet: #b78cff;
-  --lilac: #e09bff;
-  --sky: #74d7ff;
-  --mint: #72e0b4;
+  /* ========================================
+     SOFT CITRUS PALETTE
+     ======================================== */
+
+  --orange: #F4A261;
+  --orange-soft: #E98B5A;
+
+  --green: #8FAF72;
+  --green-soft: #A8C69F;
+
+  --cream: #F3E9D2;
 
   /* Core surfaces */
-  --paper: #19161b;
-  --ink: #fff1f5;
-  --muted: #d5a7b7;
-  --shadow: rgba(0, 0, 0, 0.42);
-  --surface-soft: #2b1b23;
-  --surface-deep: #21171d;
-  --border-soft: rgba(255, 111, 156, 0.42);
+  --paper: #171916;
+  --ink: #EAE7DF;
+  --muted: #A8AA9A;
+
+  --shadow: rgba(0, 0, 0, 0.46);
+
+  --surface-soft: #20251F;
+  --surface-deep: #1D201B;
+
+  --border-soft: rgba(143, 175, 114, 0.34);
 
   /* Type */
-  --font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Helvetica, Arial, sans-serif;
+
+  --font-mono: ui-monospace, "SFMono-Regular",
+    Menlo, Consolas, monospace;
 
   /* Spacing */
   --gap-xs: 0.25rem;
   --gap-sm: 0.5rem;
   --gap-md: 1rem;
+
   --radius: 26px;
 }
 
+
+/* ========================================
+   DARK THEME
+   ======================================== */
+
 [data-theme="dark"] {
-  --paper: #19161b;
-  --ink: #fff1f5;
-  --muted: #d5a7b7;
-  --shadow: rgba(0, 0, 0, 0.42);
-  --surface-soft: #2b1b23;
-  --surface-deep: #21171d;
-  --border-soft: rgba(255, 111, 156, 0.42);
+  --paper: #171916;
+  --ink: #EAE7DF;
+  --muted: #A8AA9A;
+
+  --shadow: rgba(0, 0, 0, 0.46);
+
+  --surface-soft: #20251F;
+  --surface-deep: #1D201B;
+
+  --border-soft: rgba(143, 175, 114, 0.34);
 }
 
+
+/* ========================================
+   LIGHT THEME
+   ======================================== */
+
 [data-theme="light"] {
-  --paper: #fff5f7;
-  --ink: #321b26;
-  --muted: #825064;
-  --shadow: rgba(69, 29, 45, 0.16);
-  --surface-soft: #ffe8ee;
-  --surface-deep: #f8dce4;
-  --border-soft: rgba(192, 64, 103, 0.42);
+  --paper: #F7F2E7;
+  --ink: #293027;
+  --muted: #697364;
+
+  --shadow: rgba(54, 62, 48, 0.16);
+
+  --surface-soft: #E8EEDC;
+  --surface-deep: #EDE5D5;
+
+  --border-soft: rgba(108, 137, 83, 0.38);
 }
+
+
+/* ========================================
+   GLOBAL
+   ======================================== */
 
 * {
   box-sizing: border-box;
@@ -70,96 +103,390 @@ body {
   padding: 1.25rem;
 }
 
-/* Shared visual language: vivid accent, dark layered surface, generous space. */
+
+/* ========================================
+   CARD
+   ======================================== */
+
 .card {
-  --accent: var(--rose);
+  --accent: var(--orange);
+
   position: relative;
   isolation: isolate;
+
   display: inline-flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
   gap: 1.35rem;
+
   min-width: 280px;
   max-width: 100%;
+
   padding: 3.5rem 4rem;
+
   background: var(--paper);
   color: var(--ink);
-  border: 2px solid color-mix(in srgb, var(--accent) 58%, transparent);
+
+  border: 2px solid
+    color-mix(
+      in srgb,
+      var(--accent) 58%,
+      transparent
+    );
+
   border-radius: 32px;
+
   box-shadow:
     0 20px 50px var(--shadow),
-    0 0 32px color-mix(in srgb, var(--accent) 12%, transparent);
+    0 0 32px
+      color-mix(
+        in srgb,
+        var(--accent) 10%,
+        transparent
+      );
 }
+
+
+/* Inner layer */
 
 .card::before {
   content: "";
+
   position: absolute;
   inset: 10px;
+
   z-index: -1;
-  border: 3px solid color-mix(in srgb, var(--accent) 48%, transparent);
+
+  border: 3px solid
+    color-mix(
+      in srgb,
+      var(--accent) 38%,
+      transparent
+    );
+
   border-radius: 25px;
+
   background: var(--surface-soft);
+
   pointer-events: none;
 }
+
+
+/* Green variant */
+
+.card--green {
+  --accent: var(--green);
+}
+
+
+/* Orange variant */
+
+.card--orange {
+  --accent: var(--orange);
+}
+
+
+/* Alignment */
 
 .card--start {
   align-items: flex-start;
   text-align: left;
 }
 
-/* Primary numeric hierarchy */
+
+/* ========================================
+   PRIMARY READOUT
+   ======================================== */
+
 .readout {
   font-family: var(--font-sans);
+
   font-variant-numeric: tabular-nums;
-  font-size: clamp(2.4rem, 9vw, 4.8rem);
+
+  font-size: clamp(
+    2.4rem,
+    9vw,
+    4.8rem
+  );
+
   line-height: 0.92;
+
   letter-spacing: -0.065em;
+
   font-weight: 800;
+
   color: var(--accent);
-  text-shadow: 0 0 22px color-mix(in srgb, var(--accent) 16%, transparent);
+
+  text-shadow:
+    0 0 22px
+      color-mix(
+        in srgb,
+        var(--accent) 15%,
+        transparent
+      );
 }
 
-/* Secondary hierarchy, deliberately much smaller than the readout */
+
+/* ========================================
+   SECONDARY TEXT
+   ======================================== */
+
 .label {
-  font-size: clamp(0.78rem, 2vw, 0.92rem);
+  font-size: clamp(
+    0.78rem,
+    2vw,
+    0.92rem
+  );
+
   line-height: 1.3;
+
   color: var(--muted);
+
   letter-spacing: 0.005em;
+
   font-weight: 600;
 }
 
+
+/* ========================================
+   PROGRESS / TICK LINE
+   ======================================== */
+
 .tick-line {
   position: relative;
+
   width: 100%;
   height: 5px;
+
   border-radius: 999px;
-  background: color-mix(in srgb, var(--ink) 12%, transparent);
+
+  background:
+    color-mix(
+      in srgb,
+      var(--ink) 12%,
+      transparent
+    );
+
   overflow: hidden;
 }
 
 .tick-line__fill {
   height: 100%;
+
   background: var(--accent);
+
   border-radius: inherit;
-  box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 40%, transparent);
+
+  box-shadow:
+    0 0 12px
+      color-mix(
+        in srgb,
+        var(--accent) 34%,
+        transparent
+      );
 }
+
+
+/* ========================================
+   LIVE STATE
+   ======================================== */
 
 .is-live {
   color: var(--accent);
   font-weight: 750;
 }
 
+
+/* ========================================
+   FOCUS
+   ======================================== */
+
 :focus-visible {
-  outline: 2px solid var(--accent, var(--rose));
+  outline:
+    2px solid
+    var(--accent, var(--orange));
+
   outline-offset: 4px;
 }
 
+
+/* ========================================
+   BUTTONS
+   ======================================== */
+
+.button,
+button {
+  font-family: var(--font-sans);
+}
+
+.ui-button {
+  appearance: none;
+
+  min-height: 46px;
+
+  padding: 0 1.35rem;
+
+  border:
+    1px solid
+    color-mix(
+      in srgb,
+      var(--accent) 72%,
+      white 8%
+    );
+
+  border-radius: 14px;
+
+  background: var(--accent);
+
+  color: #25271F;
+
+  font-size: 0.78rem;
+
+  font-weight: 800;
+
+  letter-spacing: 0.045em;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 6px 16px
+      color-mix(
+        in srgb,
+        var(--accent) 20%,
+        transparent
+      );
+
+  transition:
+    transform 140ms ease,
+    background 140ms ease,
+    box-shadow 140ms ease,
+    border-color 140ms ease;
+}
+
+
+/* Button hover */
+
+.ui-button:hover {
+  background:
+    color-mix(
+      in srgb,
+      var(--accent) 88%,
+      white 12%
+    );
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 8px 20px
+      color-mix(
+        in srgb,
+        var(--accent) 26%,
+        transparent
+      );
+}
+
+
+/* Button active */
+
+.ui-button:active {
+  transform: translateY(1px);
+
+  box-shadow:
+    0 3px 10px
+      color-mix(
+        in srgb,
+        var(--accent) 16%,
+        transparent
+      );
+}
+
+
+/* ========================================
+   SECONDARY BUTTON
+   ======================================== */
+
+.ui-button--secondary {
+  background:
+    color-mix(
+      in srgb,
+      var(--surface-deep) 88%,
+      var(--accent) 12%
+    );
+
+  color: var(--ink);
+
+  border-color:
+    color-mix(
+      in srgb,
+      var(--accent) 46%,
+      white 4%
+    );
+
+  box-shadow:
+    0 5px 14px
+      color-mix(
+        in srgb,
+        var(--shadow) 75%,
+        transparent
+      );
+}
+
+
+.ui-button--secondary:hover {
+  background:
+    color-mix(
+      in srgb,
+      var(--surface-soft) 76%,
+      var(--accent) 24%
+    );
+
+  border-color:
+    color-mix(
+      in srgb,
+      var(--accent) 68%,
+      white 5%
+    );
+
+  box-shadow:
+    0 7px 18px
+      color-mix(
+        in srgb,
+        var(--accent) 14%,
+        transparent
+      );
+}
+
+
+.ui-button--secondary:active {
+  box-shadow:
+    0 3px 9px
+      color-mix(
+        in srgb,
+        var(--accent) 10%,
+        transparent
+      );
+}
+
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
 @media (max-width: 480px) {
+
   .card {
-    min-width: min(280px, calc(100vw - 1.5rem));
+    min-width:
+      min(
+        280px,
+        calc(100vw - 1.5rem)
+      );
+
     padding: 2.7rem 2.2rem;
+
     gap: 1.15rem;
+
     border-radius: 29px;
   }
 
@@ -169,64 +496,25 @@ body {
   }
 
   .readout {
-    font-size: clamp(2.2rem, 14vw, 3.7rem);
+    font-size:
+      clamp(
+        2.2rem,
+        14vw,
+        3.7rem
+      );
   }
 }
 
+
+/* ========================================
+   REDUCED MOTION
+   ======================================== */
+
 @media (prefers-reduced-motion: reduce) {
+
   * {
     transition: none !important;
     animation: none !important;
   }
 }
-
-
-/* Shared controls */
-.button,
-button {
-  font-family: var(--font-sans);
-}
-
-.ui-button {
-  appearance: none;
-  min-height: 46px;
-  padding: 0 1.35rem;
-  border: 1px solid color-mix(in srgb, var(--accent) 72%, white 8%);
-  border-radius: 14px;
-  background: var(--accent);
-  color: #26151c;
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.045em;
-  cursor: pointer;
-  box-shadow: 0 6px 16px color-mix(in srgb, var(--accent) 22%, transparent);
-  transition: transform 140ms ease, background 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
-}
-
-.ui-button:hover {
-  background: color-mix(in srgb, var(--accent) 88%, white 12%);
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px color-mix(in srgb, var(--accent) 28%, transparent);
-}
-
-.ui-button:active {
-  transform: translateY(1px);
-  box-shadow: 0 3px 10px color-mix(in srgb, var(--accent) 18%, transparent);
-}
-
-.ui-button--secondary {
-  background: color-mix(in srgb, var(--surface-deep) 88%, var(--accent) 12%);
-  color: var(--ink);
-  border-color: color-mix(in srgb, var(--accent) 46%, white 4%);
-  box-shadow: 0 5px 14px color-mix(in srgb, var(--shadow) 75%, transparent);
-}
-
-.ui-button--secondary:hover {
-  background: color-mix(in srgb, var(--surface-soft) 76%, var(--accent) 24%);
-  border-color: color-mix(in srgb, var(--accent) 68%, white 5%);
-  box-shadow: 0 7px 18px color-mix(in srgb, var(--accent) 14%, transparent);
-}
-
-.ui-button--secondary:active {
-  box-shadow: 0 3px 9px color-mix(in srgb, var(--accent) 10%, transparent);
-}
+```
