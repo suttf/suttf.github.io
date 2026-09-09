@@ -14,14 +14,14 @@
     }
 
     .timer-display {
+      font-family: var(--font-mono);
       font-size: clamp(2.75rem, 10vw, 4.65rem);
       line-height: .95;
-      letter-spacing: -.06em;
+      letter-spacing: -.01em;
       font-variant-numeric: tabular-nums;
       color: var(--accent);
-      font-weight: 800;
+      font-weight: 600;
       white-space: nowrap;
-      text-shadow: 0 0 22px color-mix(in srgb, var(--accent) 15%, transparent);
     }
 
     .timer-message {
@@ -30,7 +30,8 @@
       color: var(--muted);
       font-size: .86rem;
       line-height: 1.4;
-      font-weight: 600;
+      font-weight: 500;
+      font-style: italic;
     }
 
     .timer-actions {
