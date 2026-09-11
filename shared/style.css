@@ -4,12 +4,12 @@
   color-scheme: dark light;
 
 /* Plum & Terracotta palette */
---rose: #D8784A;      /* burnt orange */
---coral: #C65A3C;     /* terracotta */
---violet: #76558F;    /* muted plum */
---lilac: #9A72A8;     /* soft mauve */
---sky: #D6A43A;       /* warm ochre */
---mint: #66865F;      /* muted olive */
+--rose: #D97A4A;       /* burnt orange */
+--coral: #C85C3A;      /* terracotta */
+--violet: #76558F;     /* muted plum */
+--lilac: #A477B0;      /* soft mauve */
+--sky: #D6A43A;        /* warm ochre */
+--mint: #66865F;       /* muted olive */
 
 /* Core surfaces */
 --paper: #18151C;             /* warm plum-black */
