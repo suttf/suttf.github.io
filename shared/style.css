@@ -3,23 +3,24 @@
 :root {
   color-scheme: dark light;
 
-/* Warm botanical palette */
---rose: #D97745;    /* burnt orange */
---coral: #C85C3A;   /* terracotta */
---violet: #477A5A;  /* forest green */
---lilac: #5F9270;   /* muted green */
---sky: #D5A83A;     /* warm yellow */
---mint: #3F8064;    /* deep green */
-  
-  /* Core surfaces */
-  --paper: #12161C;
-  --ink: #E4E9F0;
-  --muted: #8B93A0;
-  --shadow: rgba(0, 0, 0, 0.50);
-  --surface-soft: #1A2029;
-  --surface-deep: #151A22;
-  --border-soft: rgba(190, 160, 100, 0.32);
+/* Plum & Terracotta palette */
+--rose: #D8784A;      /* burnt orange */
+--coral: #C65A3C;     /* terracotta */
+--violet: #76558F;    /* muted plum */
+--lilac: #9A72A8;     /* soft mauve */
+--sky: #D6A43A;       /* warm ochre */
+--mint: #66865F;      /* muted olive */
 
+/* Core surfaces */
+--paper: #18151C;             /* warm plum-black */
+--ink: #EEE8F0;               /* soft lavender-white */
+--muted: #A49AA8;             /* dusty mauve-gray */
+--shadow: rgba(0, 0, 0, 0.32);
+--surface-soft: #211C27;      /* soft plum surface */
+--surface-deep: #1C1821;      /* deeper plum */
+--border-soft: rgba(190, 145, 170, 0.28);
+
+  
   /* Typography */
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
